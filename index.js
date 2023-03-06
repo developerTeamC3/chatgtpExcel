@@ -6,6 +6,23 @@ require('dotenv').config();
 const token = process.env.OPENAI_API_KEY;
 console.log(process.env.OPENAI_API_KEY)
 
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+const openai = new OpenAIApi(configuration);
+
+async function runCompletion (promp) {
+    const openai = new OpenAIApi(configuration);
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: promp,
+      temperature: 0,
+      max_tokens: 500,
+    });
+    return response
+}
+
 
 app.get('/:prompt', (req, res) => {
         
@@ -41,10 +58,14 @@ app.get('/:prompt', (req, res) => {
         });
         
         //res.send('Hello World!')
-    })
+});
+app.get('/apenai/:prompt', async (req, res) => {
+    const {data} = await runCompletion(req.params.prompt);
+    res.send( data.choices[0].text );
+});
 app.listen(port, () => {
      console.log(`Example app listening on port ${port}`)
-    })
+})
 
      
      
