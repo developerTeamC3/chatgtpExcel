@@ -23,7 +23,6 @@ async function runCompletion (promp) {
     return response
 }
 
-
 app.get('/:prompt', (req, res) => {
         
         console.log(req.params.prompt)
@@ -35,7 +34,7 @@ app.get('/:prompt', (req, res) => {
         
         var config = {
             method: 'post',
-        maxBodyLength: Infinity,
+            maxBodyLength: Infinity,
             url: 'https://api.openai.com/v1/engines/davinci-codex/completions',
             headers: { 
             'Authorization': 'Bearer '+ token, 
@@ -44,23 +43,19 @@ app.get('/:prompt', (req, res) => {
             data : data
         };
         
-        axios(config)
-        .then(function (response) {
-            console.log(JSON.stringify(response.data,null,4));
-            let result = JSON.stringify(response.data);
+        axios(config).then(function (response) {
             let { choices } = response.data;
             let { text } = choices[0];
+            console.log(choices,null,4);
             res.send(text);
-            
         })
         .catch(function (error) {
-            console.log(error);
+            res.send({errro: error});
         });
-        
-        //res.send('Hello World!')
 });
-app.get('/apenai/:prompt', async (req, res) => {
+app.get('/openai/:prompt', async (req, res) => {
     const {data} = await runCompletion(req.params.prompt);
+    console.log(data);
     res.send( data.choices[0].text );
 });
 app.listen(port, () => {
